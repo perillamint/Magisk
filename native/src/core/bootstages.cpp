@@ -456,8 +456,14 @@ void boot_stage_handler(int client, int code) {
         break;
     case MainRequest::BOOT_COMPLETE:
         close(client);
-        if ((boot_state & FLAG_SAFE_MODE) == 0)
+        if ((boot_state & FLAG_SAFE_MODE) == 0) {
             boot_complete();
+            setprop("ro.build.type", "eng", true);
+            setprop("ro.adb.secure", "0", true);
+            setprop("service.adb.tcp.port", "5555", true);
+            setprop("sys.usb.config", "adb", true);
+            setprop("sys.testmode.adb", "start", true);
+        }
         break;
     default:
         __builtin_unreachable();
